@@ -113,7 +113,7 @@ void find_cmd(info_t *info)
 		info->path = path;
 		fork_cmd(info);
 	}
-       	else
+	else
 	{
 		if ((interactive(info) || _getenv(info, "PATH=")
 
