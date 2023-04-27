@@ -84,7 +84,44 @@ list_t *add_node_end(list_t **head, const char *str, int num)
 	}
 	return (new_node);
 }
+/**
+ * delete_node_at_index - deletes a node at a given index
+ * @head: address of pointer to first node
+ * @index: index of node to delete
+ *  Return: 1 on success, 0 on failure
+ */
 
+int delete_node_at_index(list_t **head, unsigned int index)
+{
+	list_t *prev, *cur;
+	unsigned int i = 0;
+
+	if (!head || !*head)
+		return (0);
+	if (!index)
+	{
+		prev = *head;
+		*head = (*head)->next;
+		free(prev->str);
+		free(prev);
+		return (1);
+	}
+	prev = *head;
+	while (prev)
+	{
+		if (i == index)
+		{
+			cur->next = prev->next;
+			free(prev->str);
+			free(prev);
+			return (1);
+		}
+		i++;
+		cur = prev;
+		prev = prev->next;
+	}
+	return (0);
+}
 /**
  * print_list_str - prints only the str element of a linked list
  * @h: pointer to first node
@@ -106,39 +143,6 @@ size_t print_list_str(const list_t *h)
 }
 
 /**
- * delete_node_at_index - deletes a node at a given index
- * @head: address of pointer to first node
- * @index: index of node to delete
- *  Return: 1 on success, 0 on failure
- */
-
-int delete_node_at_index(list_t **head, unsigned int index)
-{
-	list_t *prev, *cur;
-	unsigned int i;
-
-	if (*head == NULL)
-		return (-1);
-	cur = *head;
-	if (index == 0)
-	{
-		*head = cur->next;
-		free(cur);
-		return (0);
-	}
-	for (i = 0; i < index; i++)
-	{
-		prev = cur;
-		cur = cur->next;
-		if (cur == NULL)
-			return (-1);
-	}
-	prev->next = cur->next;
-	free(cur);
-	return (0);
-}
-
-/**
  * free_list - frees all nodes of a list
  * @head_ptr: address of pointer to head node
  * Return: void
@@ -146,15 +150,18 @@ int delete_node_at_index(list_t **head, unsigned int index)
 
 void free_list(list_t **head_ptr)
 {
-	list_t *current = *head_ptr;
+	list_t *prev, *next_node, *head;
 
-	while (current != NULL)
+	if (!head_ptr || !*head_ptr)
+		return;
+	head = *head_ptr;
+	prev = head;
+	while (prev)
 	{
-		list_t *temp = current;
-
-		current = current->next;
-
-		free(temp);
+		next_node = prev->next;
+		free(prev->str);
+		free(prev);
+		prev = next_node;
 	}
 	*head_ptr = NULL;
 }

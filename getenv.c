@@ -1,5 +1,50 @@
 #include "shell.h"
 /**
+ * sh_setenv - Initializes a new environment variable
+ * or modify an existing one
+ * @info: Structure containing potential arguments. Used to maintain
+ * constant function prototype.
+ * @var: the string env var property
+ * @value: the string env var value
+ * Return: 0 if successful
+ */
+int sh_setenv(info_t *info, char *var, char *value)
+{
+	char *buf = NULL;
+	list_t *node;
+	char *p;
+
+	if (!var || !value)
+	{
+		return (0);
+	}
+	buf = malloc(_strlen(var) + _strlen(value) + 2);
+	if (!buf)
+	{
+		return (1);
+	}
+	_strcpy(buf, var);
+	_strcat(buf, "=");
+	_strcat(buf, value);
+	node = info->env;
+	while (node)
+	{
+		p = starts_with(node->str, var);
+		if (p && *p == '=')
+		{
+			free(node->str);
+			node->str = buf;
+			info->env_changed = 1;
+			return (0);
+		}
+		node = node->next;
+	}
+	add_node_end(&(info->env), buf, 0);
+	free(buf);
+	info->env_changed = 1;
+	return (0);
+}
+/**
  * sh_get_environ - returns the string array copy of our environ
  * @info: Structure containing potential arguments. Used to maintain
  * constant function prototype.
@@ -46,48 +91,4 @@ int sh_unsetenv(info_t *info, char *var)
 	}
 	return (info->env_changed);
 }
-/**
- * sh_setenv - Initializes a new environment variable
- * or modify an existing one
- * @info: Structure containing potential arguments. Used to maintain
- * constant function prototype.
- * @var: the string env var property
- * @value: the string env var value
- * Return: 0 if successful
- */
-int sh_setenv(info_t *info, char *var, char *value)
-{
-	char *buf = NULL;
-	list_t *node;
-	char *p;
 
-	if (!var || !value)
-	{
-		return (0);
-	}
-	buf = malloc(_strlen(var) + _strlen(value) + 2);
-	if (!buf)
-	{
-		return (1);
-	}
-	_strcpy(buf, var);
-	_strcat(buf, "=");
-	_strcat(buf, value);
-	node = info->env;
-	while (node)
-	{
-		p = starts_with(node->str, var);
-		if (p && *p == '=')
-		{
-			free(node->str);
-			node->str = buf;
-			info->env_changed = 1;
-			return (0);
-		}
-		node = node->next;
-	}
-	add_node_end(&(info->env), buf, 0);
-	free(buf);
-	info->env_changed = 1;
-	return (0);
-}

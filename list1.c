@@ -1,5 +1,60 @@
 #include "shell.h"
+/**
+ * list_to_strings - returns an array of strings of the list->str
+ * @head: pointer to first node
+ * Return: array of strings
+ */
 
+char **list_to_strings(list_t *head)
+{
+	char **strs;
+	char *str;
+	list_t *node = head;
+	size_t k = list_len(head), j;
+
+	if (!head || !k)
+		return (NULL);
+	strs = malloc(sizeof(char *) * (k + 1));
+	if (!strs)
+		return (NULL);
+	for (k = 0; node; node = node->next, k++)
+	{
+		str = malloc(_strlen(node->str) + 1);
+		if (!str)
+		{
+			for (j = 0; j < k; j++)
+				free(strs[j]);
+			free(strs);
+			return (NULL);
+		}
+		str = _strcpy(str, node->str);
+		strs[k] = str;
+	}
+	strs[k] = NULL;
+	return (strs);
+}
+/**
+ * get_node_index - gets the index of a node
+ * @head: pointer to list head
+ * @node: pointer to the node
+ * Return: index of node or -1
+ */
+
+ssize_t get_node_index(list_t *head, list_t *node)
+{
+	size_t index = 0;
+
+	while (head != NULL)
+	{
+		if (head == node)
+		{
+			return (index);
+		}
+		head = head->next;
+		index++;
+	}
+	return (-1);
+}
 /**
  * list_len - determines length of linked list
  * @h: pointer to first node
@@ -12,51 +67,10 @@ size_t list_len(const list_t *h)
 
 	while (h != NULL)
 	{
-		len++;
 		h = h->next;
+		len++;
 	}
 	return (len);
-}
-
-/**
- * list_to_strings - returns an array of strings of the list->str
- * @head: pointer to first node
- * Return: array of strings
- */
-
-char **list_to_strings(list_t *head)
-{
-
-	int count = 0;
-	int i = 0;
-	list_t *current = head;
-	char **strings;
-
-	while (current != NULL)
-	{
-		count++;
-		current = current->next;
-	}
-	strings = malloc(sizeof(char *) * count);
-	current = head;
-	while (current != NULL)
-	{
-		strings[i] = malloc(_strlen(current->str) + 1);
-		_strcpy(strings[i], current->str);
-		current = current->next;
-		i++;
-	}
-	current = head;
-	while (current != NULL)
-	{
-		list_t *temp = current;
-
-		current = current->next;
-
-		free(temp->str);
-		free(temp);
-	}
-	return (strings);
 }
 
 /**
@@ -106,25 +120,4 @@ list_t *node_starts_with(list_t *node, char *prefix, char c)
 	return (NULL);
 }
 
-/**
- * get_node_index - gets the index of a node
- * @head: pointer to list head
- * @node: pointer to the node
- * Return: index of node or -1
- */
 
-ssize_t get_node_index(list_t *head, list_t *node)
-{
-	size_t index = 0;
-
-	while (head != NULL)
-	{
-		if (head == node)
-		{
-			return (index);
-		}
-		head = head->next;
-		index++;
-	}
-	return (-1);
-}

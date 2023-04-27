@@ -75,6 +75,7 @@ int ch_direct(info_t *info)
 	}
 	return (0);
 }
+
 /**
  * shell_help - Displays information about shell builtin commands
  * @info: Structure containing potential arguments. Used to maintain

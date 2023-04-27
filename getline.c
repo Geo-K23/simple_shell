@@ -8,7 +8,7 @@
  */
 ssize_t input_buf(info_t *info, char **buf, size_t *len)
 {
-	ssize_t r = 0;
+	ssize_t i = 0;
 	size_t len_p = 0;
 
 	if (!*len)
@@ -17,27 +17,27 @@ ssize_t input_buf(info_t *info, char **buf, size_t *len)
 		*buf = NULL;
 		signal(SIGINT, sigintHandler);
 #if USE_GETLINE
-		r = getline(buf, &len_p, stdin);
+		i = getline(buf, &len_p, stdin);
 #else
-		r = _getline(info, buf, &len_p);
+		i = _getline(info, buf, &len_p);
 #endif
-		if (r > 0)
+		if (i > 0)
 		{
-			if ((*buf)[r - 1] == '\n')
+			if ((*buf)[i - 1] == '\n')
 			{
-				(*buf)[r - 1] = '\0';
-				r--;
+				(*buf)[i - 1] = '\0';
+				i--;
 			}
 			info->linecount_flag = 1;
 			remove_comments(*buf);
 			build_history_list(info, *buf, info->histcount++);
 			{
-				*len = r;
+				*len = i;
 				info->cmd_buf = buf;
 			}
 		}
 	}
-	return (r);
+	return (i);
 }
 /**
  * get_input - gets a line minus the newline
@@ -154,6 +154,7 @@ int _getline(info_t *info, char **ptr, size_t *length)
 	*ptr = p;
 	return (s);
 }
+
 /**
  * sigintHandler - blocks ctrl-C
  * @sig_num: the signal number

@@ -1,40 +1,5 @@
 #include "shell.h"
 /**
- * is_chain - test if current char in buffer is a chain delimeter
- * @info: the parameter struct
- * @buf: the char buffer
- * @p: address of current position in buf
- * Return: 1 if chain delimeter, 0 otherwise
- */
-int is_chain(info_t *info, char *buf, size_t *p)
-{
-	size_t j = *p;
-
-	if (buf[j] == '|' && buf[j + 1] == '|')
-	{
-		buf[j] = 0;
-		j++;
-		info->cmd_buf_type = CMD_OR;
-	}
-	else if (buf[j] == '&' && buf[j + 1] == '&')
-	{
-		buf[j] = 0;
-		j++;
-		info->cmd_buf_type = CMD_AND;
-	}
-	else if (buf[j] == ';')
-	{
-		buf[j] = 0;
-		info->cmd_buf_type = CMD_CHAIN;
-	}
-	else
-	{
-		return (0);
-	}
-	*p = j;
-	return (1);
-}
-/**
  * check_chain - checks we should continue chaining based on last status
  * @info: the parameter struct
  * @buf: the char buffer
@@ -64,39 +29,6 @@ void check_chain(info_t *info, char *buf, size_t *p, size_t i, size_t len)
 		}
 	}
 	*p = j;
-}
-/**
- * replace_alias - replaces an aliases in the tokenized string
- * @info: the parameter struct
- * Return: 1 if replaced, 0 otherwise
- */
-int replace_alias(info_t *info)
-{
-	int i;
-	char *p;
-	list_t *node;
-
-	for (i = 0; i < 10; i++)
-	{
-		node = node_starts_with(info->alias, info->argv[0], '=');
-		if (!node)
-		{
-			return (0);
-		}
-		free(info->argv[0]);
-		p = _strchr(node->str, '=');
-		if (!p)
-		{
-			return (0);
-		}
-		p = _strdup(p + 1);
-		if (!p)
-		{
-			return (0);
-		}
-		info->argv[0] = p;
-	}
-	return (1);
 }
 /**
  * replace_vars - replaces vars in the tokenized string
@@ -137,6 +69,76 @@ int replace_vars(info_t *info)
 	}
 	return (0);
 }
+/**
+ * is_chain - test if current char in buffer is a chain delimeter
+ * @info: the parameter struct
+ * @buf: the char buffer
+ * @p: address of current position in buf
+ * Return: 1 if chain delimeter, 0 otherwise
+ */
+int is_chain(info_t *info, char *buf, size_t *p)
+{
+	size_t r = *p;
+
+	if (buf[r] == '|' && buf[r + 1] == '|')
+	{
+		buf[r] = 0;
+		r++;
+		info->cmd_buf_type = CMD_OR;
+	}
+	else if (buf[r] == '&' && buf[r + 1] == '&')
+	{
+		buf[r] = 0;
+		r++;
+		info->cmd_buf_type = CMD_AND;
+	}
+	else if (buf[r] == ';')
+	{
+		buf[r] = 0;
+		info->cmd_buf_type = CMD_CHAIN;
+	}
+	else
+	{
+		return (0);
+	}
+	*p = r;
+	return (1);
+}
+
+/**
+ * replace_alias - replaces an aliases in the tokenized string
+ * @info: the parameter struct
+ * Return: 1 if replaced, 0 otherwise
+ */
+int replace_alias(info_t *info)
+{
+	int k;
+	char *p;
+	list_t *node;
+
+	for (k = 0; k < 10; k++)
+	{
+		node = node_starts_with(info->alias, info->argv[0], '=');
+		if (!node)
+		{
+			return (0);
+		}
+		free(info->argv[0]);
+		p = _strchr(node->str, '=');
+		if (!p)
+		{
+			return (0);
+		}
+		p = _strdup(p + 1);
+		if (!p)
+		{
+			return (0);
+		}
+		info->argv[0] = p;
+	}
+	return (1);
+}
+
 /**
  * replace_string - replaces string
  * @old: address of old string
